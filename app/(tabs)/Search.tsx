@@ -1,35 +1,4 @@
-// import { View, Text ,Image, FlatList } from 'react-native'
-// import React from 'react'
-// import { images } from '@/constants/images'
-// import MovieCard from '@/components/movieCard'
-// import { fetchMovies } from '@/services/api'
-// import useFetch from '@/services/useFetch'
-// import { useRouter } from '@/.expo/types/router'
 
-// const Search = () => {
-// const router = useRouter();
-
-//   const { data: movies, 
-//     loading: moviesLoading, 
-//     error: moviesError 
-//   } = useFetch(()=> fetchMovies({
-//     query: ''
-
-//   }))
-
-//   return (
-//     <View className='flex-1 bg-primary'>
-//      <Image source={images.bg} className="flex-1 w-full" resizeMode='cover'  />
-
-//      <FlatList 
-//      data={movies} renderItem={({ item })=> <MovieCard {...item} />}>
-
-//      </FlatList>
-//     </View>
-//   )
-// }
-
-// export default Search
 import { View, Text, Image, FlatList, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
@@ -39,6 +8,7 @@ import { fetchMovies } from '@/services/api';
 import useFetch from '@/services/useFetch';
 import { icons } from '@/constants/icons';
 import Searchbar from '@/components/searchbar';
+import { updateSearchCount } from '@/services/appwrite';
 
 const Search = () => {
   // Get the search query from the URL params (passed from the search bar)
@@ -55,13 +25,14 @@ const Search = () => {
 
 
   useEffect(() => {
-
-
+    
+    
     const setTimeoutID = setTimeout( async () => {
-
-    if(SearchQuery.trim()){
-      await refetchMovies();
-
+      
+      if(SearchQuery.trim()){
+        await refetchMovies();
+        if(movies?.[0] && movies.length > 0){
+          await updateSearchCount(SearchQuery, movies[0]);
     }
     else{
       reset();
