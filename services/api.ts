@@ -7,6 +7,8 @@
 //     }
 // }
 
+import { Movie, MovieDetails } from "@/interfaces/interfaces";
+
 // export const fetchMovies = async({ query }:{ query: string }) => {
 //     const endpoint = query
 //     ? `/search/movie?query=${encodeURIComponent(query)}`: 
@@ -50,4 +52,33 @@ export const fetchMovies = async ({ query }: { query: string }) => {
 
     const data = await response.json();
     return data.results; // This should be an array
+}
+export const fetchTrendingMovies = async (): Promise<Movie[]> => {
+  // your API call to get trending movies
+  const response = await fetch(`https://api.themoviedb.org/3/trending/movie/day?api_key=eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlMjZmMjI0MDdlMTc5YTY5ZDE2MWJiMDk5ZjFiZTc0ZSIsIm5iZiI6MTc3MTI1MjI2Ny44MDQ5OTk4LCJzdWIiOiI2OTkzMmEyYjcxZjRmYmUzOGIxYWY0YTkiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.mL1srmdnpwf6RjJbqQzLZgfUq1nHXTa3tN0D_MzkhTw`);
+  const data = await response.json();
+  return data.results;
+};
+
+export const fetchMovieDetails = async (movieid: string ):Promise<MovieDetails> =>{
+
+    try{
+
+        const response = await fetch(`${TMDB_CONFIG.BASE_URL}/movie/${movieid}?api_key=${TMDB_CONFIG.API_KEY}`,{
+            method:'GET',
+            headers: TMDB_CONFIG.headers
+        });
+
+        if(!response.ok){
+            throw new Error(`Failed to fetch movie details: ${response.status} ${response.statusText}`);
+        }
+        const data = await response.json();
+
+        return data as MovieDetails;
+
+    }
+    catch(error){
+        throw new Error('Failed to fetch movie details');
+    }
+
 }
